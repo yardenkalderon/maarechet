@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>המערכת</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="המערכת">
+<meta name="theme-color" content="#F6F5F2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F5F2; --ink:#1C1E22; --soft:#5E6369; --rule:#DFDDD6; --card:#FFFFFF;
+  --mgmt:#9A5F24; --mgmt-wash:#F3E8D9;
+  --eng:#236070; --eng-wash:#DCEAEE;
+  --live:#B4402C;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#15171B; --ink:#ECEAE5; --soft:#9AA0A7; --rule:#2C3037; --card:#1E2127;
+    --mgmt:#DDA86A; --mgmt-wash:#34291B; --eng:#7EC1D2; --eng-wash:#173139; --live:#E97C60;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#15171B; --ink:#ECEAE5; --soft:#9AA0A7; --rule:#2C3037; --card:#1E2127;
+  --mgmt:#DDA86A; --mgmt-wash:#34291B; --eng:#7EC1D2; --eng-wash:#173139; --live:#E97C60;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*,*::before,*::after{box-sizing:inherit;}
+html,body{margin:0;}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:'Assistant',system-ui,-apple-system,sans-serif;
+  font-size:17px; line-height:1.45; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:520px;margin:0 auto;padding:18px 18px 40px;}
+.mgmt{--c:var(--mgmt);--w:var(--mgmt-wash);}
+.eng{--c:var(--eng);--w:var(--eng-wash);}
+
+/* top line */
+.top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;}
+.top .day{font-family:'Rubik',sans-serif;font-weight:700;font-size:1.25rem;}
+.top .clock{font-family:'Rubik',sans-serif;font-weight:500;color:var(--soft);font-variant-numeric:tabular-nums;}
+
+/* hero: now / next */
+.hero{
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-inline-start:6px solid var(--c);
+  border-radius:16px;
+  padding:18px 18px 20px;
+  margin-bottom:12px;
+}
+.hero .state{
+  font-family:'Rubik',sans-serif;font-weight:600;font-size:0.95rem;
+  color:var(--c);display:flex;align-items:center;gap:8px;
+}
+.hero .state.live{color:var(--live);}
+.dot{width:9px;height:9px;border-radius:50%;background:currentColor;flex:none;}
+@media (prefers-reduced-motion:no-preference){ .live .dot{animation:pulse 1.8s ease-in-out infinite;} }
+@keyframes pulse{50%{opacity:.25}}
+.hero .course{font-weight:700;font-size:1.22rem;line-height:1.25;margin-top:8px;}
+.hero .place{
+  font-family:'Rubik',sans-serif;font-weight:800;
+  font-size:2.6rem;line-height:1.02;letter-spacing:-0.02em;
+  margin-top:10px;
+}
+.hero .place small{display:block;font-size:1.05rem;font-weight:600;letter-spacing:0;color:var(--soft);margin-bottom:2px;}
+.hero .meta{color:var(--soft);font-size:0.95rem;margin-top:10px;}
+.hero .meta b{color:var(--ink);font-weight:600;}
+.hero.next{padding:14px 16px 15px;border-inline-start-width:4px;}
+.hero.next .place{font-size:1.7rem;margin-top:6px;}
+.hero.next .course{font-size:1.05rem;margin-top:5px;}
+.done{
+  border:1px dashed var(--rule);border-radius:16px;padding:18px;text-align:center;margin-bottom:12px;
+}
+.done strong{display:block;font-family:'Rubik',sans-serif;font-size:1.15rem;}
+.done span{color:var(--soft);font-size:0.95rem;}
+
+/* lists */
+h2{font-family:'Rubik',sans-serif;font-size:1.05rem;font-weight:600;margin:26px 0 8px;}
+.list{list-style:none;margin:0;padding:0;}
+.row{
+  display:grid;grid-template-columns:54px 1fr;gap:12px;
+  padding:11px 0;border-top:1px solid var(--rule);
+}
+.row:last-child{border-bottom:1px solid var(--rule);}
+.row.past{opacity:.4;}
+.row .t{font-family:'Rubik',sans-serif;font-weight:600;font-size:0.95rem;font-variant-numeric:tabular-nums;}
+.row .t span{display:block;font-weight:400;color:var(--soft);font-size:0.85rem;}
+.row .b{border-inline-start:3px solid var(--c);padding-inline-start:10px;}
+.row[data-k="t"] .b{border-inline-start-style:dotted;}
+.row .n{font-weight:600;line-height:1.25;}
+.row .p{font-family:'Rubik',sans-serif;font-weight:600;color:var(--c);font-size:0.98rem;margin-top:2px;}
+.row .k{color:var(--soft);font-size:0.84rem;}
+.flag{display:inline-block;background:var(--w);color:var(--c);border-radius:4px;padding:0 6px;font-size:0.76rem;font-weight:700;margin-inline-start:4px;vertical-align:1px;}
+
+details{border-top:1px solid var(--rule);}
+details:last-of-type{border-bottom:1px solid var(--rule);}
+summary{
+  list-style:none;cursor:pointer;padding:13px 2px;
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:'Rubik',sans-serif;font-weight:600;
+}
+summary::-webkit-details-marker{display:none;}
+summary span{font-family:'Assistant';font-weight:400;color:var(--soft);font-size:0.9rem;}
+summary::after{content:'+';color:var(--soft);font-weight:400;margin-inline-start:8px;}
+details[open] summary::after{content:'−';}
+summary:focus-visible{outline:2px solid var(--live);outline-offset:2px;border-radius:4px;}
+details .list{padding-bottom:12px;}
+details .row:first-child{border-top:none;}
+details .row:last-child{border-bottom:none;}
+
+.exam{display:grid;grid-template-columns:70px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--rule);}
+.exam:last-child{border-bottom:1px solid var(--rule);}
+.exam .d{font-family:'Rubik',sans-serif;font-weight:600;font-variant-numeric:tabular-nums;}
+.exam .d span{display:block;font-weight:400;color:var(--soft);font-size:0.82rem;}
+.exam.past{opacity:.4;}
+.exam .in{color:var(--live);font-size:0.84rem;font-weight:600;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><span class="day" id="day">—</span><span class="clock" id="clock">—</span></div>
+  <div id="hero"></div>
+  <div id="today"></div>
+  <h2>כל השבוע</h2>
+  <div id="week"></div>
+  <h2>בחינות</h2>
+  <div id="exams"></div>
+</div>
+
+<script>
+const M='mgmt',E='eng';
+const DAYS=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+
+// סמסטר א' תשפ"ז — מיקומים מתוך המערכת
+const WEEK={
+  1:[ // שני
+    {f:'10:00',t:'12:00',c:'מחקר וחשיבה ביקורתית',k:'תרגיל',g:'04',fac:M,b:'רקנאטי',r:'407',note:'מחצית שנייה'},
+    {f:'13:00',t:'14:00',c:'מבוא למתמטיקה בדידה',k:'תרגיל',g:'02',fac:E,b:'אודיטוריום הנדסה',r:'020'},
+    {f:'14:00',t:'16:00',c:'שיטות מתמטיות 2',k:'שיעור',g:'01',fac:E,b:'',r:''},
+    {f:'16:00',t:'18:00',c:'יסודות השיווק',k:'שיעור',g:'01',fac:M,b:'לורי לוקיי',r:'001'}
+  ],
+  3:[ // רביעי
+    {f:'10:00',t:'11:00',c:'כלכלת עסקים ב׳',k:'תרגיל',g:'08',fac:M,b:'לורי לוקיי',r:'002'},
+    {f:'12:00',t:'14:00',c:'כלכלת עסקים ב׳',k:'שיעור',g:'07',fac:M,b:'רקנאטי',r:'104'},
+    {f:'14:00',t:'16:00',c:'שיטות מתמטיות 2',k:'שיעור',g:'01',fac:E,b:'כיתות הנדסה',r:'102'}
+  ],
+  4:[ // חמישי
+    {f:'08:30',t:'12:00',c:'מחקר וחשיבה ביקורתית',k:'שיעור',g:'03',fac:M,b:'רקנאטי',r:'103'},
+    {f:'12:00',t:'14:00',c:'יסודות השיווק',k:'שיעור',g:'01',fac:M,b:'לורי לוקיי',r:'001'},
+    {f:'14:00',t:'16:00',c:'מבוא למתמטיקה בדידה',k:'שיעור',g:'01',fac:E,b:'כיתות הנדסה',r:'101'},
+    {f:'16:00',t:'18:00',c:'שיטות מתמטיות 2',k:'תרגיל',g:'03',fac:E,b:'כיתות דן דוד',r:'303'}
+  ]
+};
+
+const EXAMS=[
+  {d:'2027-01-20',n:'כלכלת עסקים ב׳',h:''},
+  {d:'2027-02-05',n:'יסודות השיווק',h:''},
+  {d:'2027-02-07',n:'שיטות מתמטיות 2',h:'14:00'},
+  {d:'2027-02-17',n:'מחקר וחשיבה ביקורתית',h:''},
+  {d:'2027-02-22',n:'מבוא למתמטיקה בדידה',h:'09:00'}
+];
+
+const mins=s=>{const[a,b]=s.split(':').map(Number);return a*60+b;};
+const place=x=>x.b?{b:x.b,r:x.r}:{b:'כיתה טרם פורסמה',r:'—'};
+const flag=x=>x.note?`<span class="flag">${x.note}</span>`:'';
+const inText=m=>m<60?`בעוד ${m} דק׳`:`בעוד ${Math.floor(m/60)} שע׳${m%60?` ו-${m%60} דק׳`:''}`;
+
+function heroHTML(x,mode,extra){
+  const p=place(x);
+  const state = mode==='now'
+    ? `<div class="state live"><span class="dot"></span>עכשיו · עד ${x.t}</div>`
+    : `<div class="state">${extra}</div>`;
+  return `<div class="hero ${x.fac}${mode==='later'?' next':''}">
+    ${state}
+    <div class="course">${x.c}${flag(x)}</div>
+    <div class="place"><small>${p.b}</small>${p.r}</div>
+    <div class="meta">${x.k} ${x.g} · <b>${x.f}–${x.t}</b></div>
+  </div>`;
+}
+
+function rowHTML(x,past){
+  const p=place(x);
+  return `<li class="row ${x.fac}${past?' past':''}" data-k="${x.k==='תרגיל'?'t':'s'}">
+    <div class="t">${x.f}<span>${x.t}</span></div>
+    <div class="b">
+      <div class="n">${x.c}${flag(x)}</div>
+      <div class="p">${p.b} ${p.r}</div>
+      <div class="k">${x.k} ${x.g}</div>
+    </div></li>`;
+}
+
+function nextStudyDay(wd){
+  for(let i=1;i<=7;i++){const d=(wd+i)%7;if(WEEK[d])return{d,i};}
+  return null;
+}
+
+function render(){
+  const now=new Date(), wd=now.getDay(), m=now.getHours()*60+now.getMinutes();
+  document.getElementById('day').textContent='יום '+DAYS[wd];
+  document.getElementById('clock').textContent=now.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});
+
+  const items=WEEK[wd]||[];
+  const cur=items.find(x=>m>=mins(x.f)&&m<mins(x.t));
+  const upcoming=items.filter(x=>mins(x.f)>m);
+  let hero='';
+
+  if(cur){
+    hero+=heroHTML(cur,'now');
+    const nx=upcoming[0];
+    if(nx) hero+=heroHTML(nx,'later',`אחר כך · ${nx.f} · ${inText(mins(nx.f)-m)}`);
+  }else if(upcoming.length){
+    const nx=upcoming[0];
+    hero+=heroHTML(nx,'next',`הבא · ${nx.f} · ${inText(mins(nx.f)-m)}`);
+    if(upcoming[1]) hero+=heroHTML(upcoming[1],'later',`אחר כך · ${upcoming[1].f}`);
+  }else{
+    const n=nextStudyDay(wd);
+    const first=n?WEEK[n.d][0]:null;
+    const label=!n?'':(n.i===1?'מחר':'ביום '+DAYS[n.d]);
+    hero+=`<div class="done"><strong>${items.length?'סיימת להיום':'אין לימודים היום'}</strong>
+      ${first?`<span>${label} ב-${first.f} · ${place(first).b} ${place(first).r}</span>`:''}</div>`;
+  }
+  document.getElementById('hero').innerHTML=hero;
+
+  const todayEl=document.getElementById('today');
+  todayEl.innerHTML = items.length
+    ? `<h2>היום</h2><ul class="list">${items.map(x=>rowHTML(x,mins(x.t)<=m)).join('')}</ul>`
+    : '';
+
+  const openState={};
+  document.querySelectorAll('#week details').forEach(d=>openState[d.dataset.d]=d.open);
+  document.getElementById('week').innerHTML=[1,3,4].map(d=>{
+    const it=WEEK[d];
+    return `<details data-d="${d}"${openState[d]?' open':''}>
+      <summary>יום ${DAYS[d]}<span>${it[0].f}–${it[it.length-1].t}</span></summary>
+      <ul class="list">${it.map(x=>rowHTML(x,false)).join('')}</ul></details>`;
+  }).join('');
+
+  const t0=new Date();t0.setHours(0,0,0,0);
+  document.getElementById('exams').innerHTML=EXAMS.map(e=>{
+    const dt=new Date(e.d+'T00:00:00');
+    const days=Math.round((dt-t0)/86400000);
+    const past=days<0;
+    const lbl=dt.toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit'});
+    const wday='יום '+DAYS[dt.getDay()];
+    const inD=!past&&days<=30?`<div class="in">${days===0?'היום':days===1?'מחר':`בעוד ${days} ימים`}</div>`:'';
+    return `<div class="exam${past?' past':''}"><div class="d">${lbl}<span>${wday}</span></div>
+      <div>${e.n}${e.h?` · ${e.h}`:''}${inD}</div></div>`;
+  }).join('');
+}
+
+render();
+setInterval(render,30000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)render();});
+</script>
+</body>
+</html>
