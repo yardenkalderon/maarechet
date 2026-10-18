@@ -142,7 +142,7 @@ const DAYS=['ראשון','שני','שלישי','רביעי','חמישי','שיש
 // סמסטר א' תשפ"ז — מיקומים מתוך המערכת
 const WEEK={
   1:[ // שני
-    {f:'10:00',t:'12:00',c:'מחקר וחשיבה ביקורתית',k:'תרגיל',g:'04',fac:M,b:'רקנאטי',r:'105',note:'מחצית שנייה'},
+    {f:'10:00',t:'12:00',c:'מחקר וחשיבה ביקורתית',k:'תרגיל',g:'04',fac:M,b:'רקנאטי',r:'105',note:'מ-23.11',dates:['2026-11-23','2026-11-30','2026-12-14','2026-12-21','2026-12-28','2027-01-04','2027-01-11']},
     {f:'13:00',t:'14:00',c:'מבוא למתמטיקה בדידה',k:'תרגיל',g:'02',fac:E,b:'אודיטוריום הנדסה',r:'020'},
     {f:'14:00',t:'16:00',c:'שיטות מתמטיות 2',k:'שיעור',g:'01',fac:E,b:'כיתות הנדסה',r:'103'},
     {f:'16:00',t:'18:00',c:'יסודות השיווק',k:'שיעור',g:'01',fac:M,b:'לורי לוקיי',r:'001'}
@@ -169,6 +169,8 @@ const EXAMS=[
 ];
 
 const mins=s=>{const[a,b]=s.split(':').map(Number);return a*60+b;};
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const dayItems=d=>(WEEK[d.getDay()]||[]).filter(x=>!x.dates||x.dates.includes(iso(d)));
 const place=x=>x.b?{b:x.b,r:x.r}:{b:'כיתה טרם פורסמה',r:'—'};
 const flag=x=>x.note?`<span class="flag">${x.note}</span>`:'';
 const inText=m=>m<60?`בעוד ${m} דק׳`:`בעוד ${Math.floor(m/60)} שע׳${m%60?` ו-${m%60} דק׳`:''}`;
@@ -198,7 +200,7 @@ function rowHTML(x,past){
 }
 
 function nextStudyDay(wd){
-  for(let i=1;i<=7;i++){const d=(wd+i)%7;if(WEEK[d])return{d,i};}
+  for(let i=1;i<=14;i++){const dt=new Date();dt.setDate(dt.getDate()+i);const it=dayItems(dt);if(it.length)return{d:dt.getDay(),i,first:it[0]};}
   return null;
 }
 
@@ -207,7 +209,7 @@ function render(){
   document.getElementById('day').textContent='יום '+DAYS[wd];
   document.getElementById('clock').textContent=now.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});
 
-  const items=WEEK[wd]||[];
+  const items=dayItems(now);
   const cur=items.find(x=>m>=mins(x.f)&&m<mins(x.t));
   const upcoming=items.filter(x=>mins(x.f)>m);
   let hero='';
@@ -222,7 +224,7 @@ function render(){
     if(upcoming[1]) hero+=heroHTML(upcoming[1],'later',`אחר כך · ${upcoming[1].f}`);
   }else{
     const n=nextStudyDay(wd);
-    const first=n?WEEK[n.d][0]:null;
+    const first=n?n.first:null;
     const label=!n?'':(n.i===1?'מחר':'ביום '+DAYS[n.d]);
     hero+=`<div class="done"><strong>${items.length?'סיימת להיום':'אין לימודים היום'}</strong>
       ${first?`<span>${label} ב-${first.f} · ${place(first).b} ${place(first).r}</span>`:''}</div>`;
