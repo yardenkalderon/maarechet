@@ -98,6 +98,9 @@ h2{font-family:'Rubik',sans-serif;font-size:1.05rem;font-weight:600;margin:26px 
 .row .n{font-weight:600;line-height:1.25;}
 .row .p{font-family:'Rubik',sans-serif;font-weight:600;color:var(--c);font-size:0.98rem;margin-top:2px;}
 .row .k{color:var(--soft);font-size:0.84rem;}
+.flag.must{background:var(--live);color:#fff;}
+.hero.must{border-inline-start-color:var(--live);}
+.must-next{display:block;margin-top:6px;color:var(--live);font-weight:700;}
 .flag{display:inline-block;background:var(--w);color:var(--c);border-radius:4px;padding:0 6px;font-size:0.76rem;font-weight:700;margin-inline-start:4px;vertical-align:1px;}
 
 details{border-top:1px solid var(--rule);}
@@ -145,7 +148,7 @@ const WEEK={
     {f:'10:00',t:'12:00',c:'מחקר וחשיבה ביקורתית',k:'תרגיל',g:'04',fac:M,b:'רקנאטי',r:'105',note:'מ-23.11',dates:['2026-11-23','2026-11-30','2026-12-14','2026-12-21','2026-12-28','2027-01-04','2027-01-11']},
     {f:'13:00',t:'14:00',c:'מבוא למתמטיקה בדידה',k:'תרגיל',g:'02',fac:E,b:'אודיטוריום הנדסה',r:'020'},
     {f:'14:00',t:'16:00',c:'שיטות מתמטיות 2',k:'שיעור',g:'01',fac:E,b:'כיתות הנדסה',r:'103'},
-    {f:'16:00',t:'18:00',c:'יסודות השיווק',k:'שיעור',g:'01',fac:M,b:'לורי לוקיי',r:'001',skip:['2026-11-23']}
+    {f:'16:00',t:'18:00',c:'יסודות השיווק',k:'שיעור',g:'01',fac:M,b:'לורי לוקיי',r:'001',skip:['2026-11-23'],guest:['2026-11-16','2026-11-30','2026-12-21']}
   ],
   3:[ // רביעי
     {f:'10:00',t:'11:00',c:'כלכלת עסקים ב׳',k:'תרגיל',g:'08',fac:M,b:'לורי לוקיי',r:'002'},
@@ -171,9 +174,9 @@ const EXAMS=[
 const mins=s=>{const[a,b]=s.split(':').map(Number);return a*60+b;};
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const SEM_END='2027-01-17';
-const dayItems=d=>iso(d)>SEM_END?[]:(WEEK[d.getDay()]||[]).filter(x=>(!x.dates||x.dates.includes(iso(d)))&&!(x.skip&&x.skip.includes(iso(d))));
+const dayItems=d=>iso(d)>SEM_END?[]:(WEEK[d.getDay()]||[]).filter(x=>(!x.dates||x.dates.includes(iso(d)))&&!(x.skip&&x.skip.includes(iso(d)))).map(x=>x.guest&&x.guest.includes(iso(d))?{...x,note:'הרצאת אורח · חובה',must:true}:x);
 const place=x=>x.b?{b:x.b,r:x.r}:{b:'כיתה טרם פורסמה',r:'—'};
-const flag=x=>x.note?`<span class="flag">${x.note}</span>`:'';
+const flag=x=>x.note?`<span class="flag${x.must?' must':''}">${x.note}</span>`:'';
 const inText=m=>m<60?`בעוד ${m} דק׳`:`בעוד ${Math.floor(m/60)} שע׳${m%60?` ו-${m%60} דק׳`:''}`;
 
 function heroHTML(x,mode,extra){
@@ -181,7 +184,7 @@ function heroHTML(x,mode,extra){
   const state = mode==='now'
     ? `<div class="state live"><span class="dot"></span>עכשיו · עד ${x.t}</div>`
     : `<div class="state">${extra}</div>`;
-  return `<div class="hero ${x.fac}${mode==='later'?' next':''}">
+  return `<div class="hero ${x.fac}${mode==='later'?' next':''}${x.must?' must':''}">
     ${state}
     <div class="course">${x.c}${flag(x)}</div>
     <div class="place"><small>${p.b}</small>${p.r}</div>
@@ -201,7 +204,7 @@ function rowHTML(x,past){
 }
 
 function nextStudyDay(wd){
-  for(let i=1;i<=14;i++){const dt=new Date();dt.setDate(dt.getDate()+i);const it=dayItems(dt);if(it.length)return{d:dt.getDay(),i,first:it[0]};}
+  for(let i=1;i<=14;i++){const dt=new Date();dt.setDate(dt.getDate()+i);const it=dayItems(dt);if(it.length)return{d:dt.getDay(),i,first:it[0],must:it.find(x=>x.must)};}
   return null;
 }
 
@@ -228,7 +231,7 @@ function render(){
     const first=n?n.first:null;
     const label=!n?'':(n.i===1?'מחר':'ביום '+DAYS[n.d]);
     hero+=`<div class="done"><strong>${items.length?'סיימת להיום':'אין לימודים היום'}</strong>
-      ${first?`<span>${label} ב-${first.f} · ${place(first).b} ${place(first).r}</span>`:''}</div>`;
+      ${first?`<span>${label} ב-${first.f} · ${place(first).b} ${place(first).r}</span>`:''}${n&&n.must?`<span class="must-next">${label}: הרצאת אורח חובה · ${n.must.c} ${n.must.f}</span>`:''}</div>`;
   }
   document.getElementById('hero').innerHTML=hero;
 
